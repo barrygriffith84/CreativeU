@@ -1,0 +1,21 @@
+/* Purpose: Styling for login and registration pages */
+.auth-fieldset{
+    margin: 10px;
+    border: none;
+
+}
+
+.auth-button{
+    background-color:  #506d45;
+    color: white;
+}
+
+.register-link{
+    color:  #506d45;
+}
+
+.auth-form-input{
+    height: 35px;
+    padding: 5px;
+    border-radius: 5px;
+}
