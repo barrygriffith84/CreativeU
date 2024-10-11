@@ -1,0 +1,6 @@
+@CreativeU_HostAddress = http://localhost:5031
+
+GET {{CreativeU_HostAddress}}/hobbies/
+Accept: application/json
+
+###
