@@ -21,14 +21,12 @@ namespace CreativeU.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                SELECT p.Id AS PostId, p.Title, p.Caption, p.DateCreated AS PostDateCreated, 
-                       p.ImageUrl AS PostImageUrl, p.UserProfileId,
-
-                       up.Name, up.Bio, up.Email, up.DateCreated AS UserProfileDateCreated, 
-                       up.ImageUrl AS UserProfileImageUrl
+                SELECT p.Id AS PostId, p.Title, p.imageLocation, p.Content, p.CreateDateTime AS PostDateCreated, 
+                        p.UserProfileId,
+                        up.Email, up.DisplayName as Name, up.CreateDateTime AS UserProfileDateCreated 
                   FROM Post p 
                        LEFT JOIN UserProfile up ON p.UserProfileId = up.id
-              ORDER BY p.DateCreated";
+              ORDER BY p.CreateDateTime";
 
                     var reader = cmd.ExecuteReader();
 
@@ -39,9 +37,8 @@ namespace CreativeU.Repositories
                         {
                             Id = DbUtils.GetInt(reader, "PostId"),
                             Title = DbUtils.GetString(reader, "Title"),
-                            Caption = DbUtils.GetString(reader, "Caption"),
+                            Caption = DbUtils.GetString(reader, "Content"),
                             DateCreated = DbUtils.GetDateTime(reader, "PostDateCreated"),
-                            ImageUrl = DbUtils.GetString(reader, "PostImageUrl"),
                             UserProfileId = DbUtils.GetInt(reader, "UserProfileId"),
                             UserProfile = new UserProfile()
                             {
@@ -49,7 +46,6 @@ namespace CreativeU.Repositories
                                 Name = DbUtils.GetString(reader, "Name"),
                                 Email = DbUtils.GetString(reader, "Email"),
                                 DateCreated = DbUtils.GetDateTime(reader, "UserProfileDateCreated"),
-                                ImageUrl = DbUtils.GetString(reader, "UserProfileImageUrl"),
                             },
                         });
                     }
@@ -69,15 +65,15 @@ namespace CreativeU.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                          SELECT p.Id AS PostId, p.Title, p.Caption, p.DateCreated AS PostDateCreated, 
-                       p.ImageUrl AS PostImageUrl, p.UserProfileId,
+                             
+                SELECT p.Id AS PostId, p.Title, p.imageLocation, p.Content, p.CreateDateTime AS PostDateCreated, 
+                        p.UserProfileId,
 
-                       up.Name, up.Bio, up.Email, up.DateCreated AS UserProfileDateCreated, 
-                       up.ImageUrl AS UserProfileImageUrl
+                        up.Email, up.DisplayName as Name, up.CreateDateTime AS UserProfileDateCreated 
                   FROM Post p 
                        LEFT JOIN UserProfile up ON p.UserProfileId = up.id
-                    WHERE p.Id = @Id
-                    ORDER BY p.DateCreated";
+                            WHERE p.Id = @Id
+              ORDER BY p.CreateDateTime";
 
                     DbUtils.AddParameter(cmd, "@Id", id);
 
@@ -90,9 +86,9 @@ namespace CreativeU.Repositories
                         {
                             Id = DbUtils.GetInt(reader, "PostId"),
                             Title = DbUtils.GetString(reader, "Title"),
-                            Caption = DbUtils.GetString(reader, "Caption"),
+                            Caption = DbUtils.GetString(reader, "Content"),
                             DateCreated = DbUtils.GetDateTime(reader, "PostDateCreated"),
-                            ImageUrl = DbUtils.GetString(reader, "PostImageUrl"),
+                            ImageUrl = DbUtils.GetString(reader, "imageLocation"),
                             UserProfileId = DbUtils.GetInt(reader, "UserProfileId"),
                             UserProfile = new UserProfile()
                             {
@@ -100,7 +96,6 @@ namespace CreativeU.Repositories
                                 Name = DbUtils.GetString(reader, "Name"),
                                 Email = DbUtils.GetString(reader, "Email"),
                                 DateCreated = DbUtils.GetDateTime(reader, "UserProfileDateCreated"),
-                                ImageUrl = DbUtils.GetString(reader, "UserProfileImageUrl"),
                             },
                         };
                     }
@@ -120,13 +115,13 @@ namespace CreativeU.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        INSERT INTO Post (Title, Caption, DateCreated, ImageUrl, UserProfileId)
+                        INSERT INTO Post (Title, Content, CreateDateTime, ImageLocation, UserProfileId)
                         OUTPUT INSERTED.ID
-                        VALUES (@Title, @Caption, @DateCreated, @ImageUrl, @UserProfileId)";
+                        VALUES (@Title, @Content, @DateCreated, @ImageUrl, @UserProfileId)";
 
                     DbUtils.AddParameter(cmd, "@Title", post.Title);
-                    DbUtils.AddParameter(cmd, "@Caption", post.Caption);
-                    DbUtils.AddParameter(cmd, "@DateCreated", post.DateCreated);
+                    DbUtils.AddParameter(cmd, "@Content", post.Caption);
+                    DbUtils.AddParameter(cmd, "@DateCreated", DateTime.Now);
                     DbUtils.AddParameter(cmd, "@ImageUrl", post.ImageUrl);
                     DbUtils.AddParameter(cmd, "@UserProfileId", post.UserProfileId);
 
@@ -145,15 +140,13 @@ namespace CreativeU.Repositories
                     cmd.CommandText = @"
                         UPDATE Post
                            SET Title = @Title,
-                               Caption = @Caption,
-                               DateCreated = @DateCreated,
-                               ImageUrl = @ImageUrl,
+                               Content = @Caption,
+                               ImageLocation = @ImageUrl,
                                UserProfileId = @UserProfileId
                          WHERE Id = @Id";
 
                     DbUtils.AddParameter(cmd, "@Title", post.Title);
                     DbUtils.AddParameter(cmd, "@Caption", post.Caption);
-                    DbUtils.AddParameter(cmd, "@DateCreated", post.DateCreated);
                     DbUtils.AddParameter(cmd, "@ImageUrl", post.ImageUrl);
                     DbUtils.AddParameter(cmd, "@UserProfileId", post.UserProfileId);
                     DbUtils.AddParameter(cmd, "@Id", post.Id);
